@@ -49,7 +49,6 @@ class Solution:
                 if groupLen > maxLen:
                     maxLen = groupLen
         
-        print(groups)
         return maxLen
 
 sol = Solution()
