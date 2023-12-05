@@ -13,17 +13,15 @@ class Solution:
             if queue:
                 heapq.heappush(rightHeap, queue.pop())
 
-        while k > 0:
+        for _ in range(k):
             if (leftHeap and not rightHeap) or (leftHeap and leftHeap[0] <= rightHeap[0]):
-                cost = heapq.heappop(leftHeap)
+                totalCost += heapq.heappop(leftHeap)
                 if queue:
                     heapq.heappush(leftHeap, queue.popleft())
             elif (rightHeap and not leftHeap) or (rightHeap and leftHeap[0] > rightHeap[0]):
-                cost = heapq.heappop(rightHeap)
+                totalCost += heapq.heappop(rightHeap)
                 if queue:
                     heapq.heappush(rightHeap, queue.pop())
-            totalCost += cost
-            k -= 1
         
         return totalCost
 
