@@ -2,7 +2,7 @@ class Solution:
     def findMinArrowShots(self, points: list[list[int]]) -> int:
         points.sort(key=lambda x:x[1])
         overlap = None
-        overlaps = []
+        count = 0
         for interval in points:
             if not overlap:
                 overlap = interval
@@ -14,11 +14,9 @@ class Solution:
                 else:
                     #current interval has no overlap with overlap
                     #add overlap to array, current interval starts new overlap
-                    overlaps.append(overlap)
+                    count += 1
                     overlap = interval
-        if overlap and overlaps[-1] != overlap:
-            overlaps.append(overlap)
-        return len(overlaps)
+        return count+1
 
 sol = Solution()
 points = [[1,2],[3,4],[5,6],[7,8]]
