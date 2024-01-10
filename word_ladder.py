@@ -1,4 +1,4 @@
-# ATTEMPT
+from collections import deque
 
 class Solution:
     def ladderLength(self, beginWord: str, endWord: str, wordList: list[str]) -> int:
@@ -6,7 +6,8 @@ class Solution:
         wordSet = set(wordList)
         if beginWord in wordSet:
             wordSet.remove(beginWord)
-        minPathMemo = {}
+        if endWord not in wordSet:
+            return 0
 
         def oneOff(word1, word2):
             offCount = 0
@@ -16,41 +17,22 @@ class Solution:
                 if offCount > 1:
                     return False
             return offCount == 1
-
-        def wordStep(currentWord, wordSet):
-
-            print(currentWord)
-            print(wordSet)
-            print('----------')
-
-            if currentWord in minPathMemo:
-                print(f'{currentWord} found in memo: {minPathMemo[currentWord]}')
-                print('--------------------')
-                return minPathMemo[currentWord]
-            
-            if oneOff(currentWord, endWord):
-                minPathMemo[currentWord] = 1
-                print(f'{currentWord} one off from end word {endWord}: {1}')
-                print('--------------------')
-                return 1
-            
-            currentMin = 0
-            for nextWord in wordSet:
-                if oneOff(currentWord, nextWord):
-                    res = wordStep(nextWord, wordSet.difference({nextWord}))
-                    if res:
-                        if currentMin and res + 1 < currentMin:
-                            currentMin = res + 1
-                        else:
-                            currentMin = res + 1
-                    print(f'currentMin from {currentWord}: {currentMin}')
-            minPathMemo[currentWord] = currentMin
-            print(f'final min from {currentWord}: {currentMin}')
-            print('--------------------')
-            return currentMin
         
+        queue = deque()
+        queue.append((beginWord,1))
+        while queue:
+            current, dist = queue.popleft()
+            oneAway = set()
+            for word in wordSet:
+                if oneOff(current, word):
+                    if word == endWord:
+                        return dist+1
+                    oneAway.add(word)
+                    queue.append((word, dist+1))
+            wordSet = wordSet.difference(oneAway)
+        return 0
+
         
-        return wordStep(beginWord, wordSet)
 
 sol = Solution()
 beginWord = 'hit'
