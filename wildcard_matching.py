@@ -3,52 +3,27 @@
 class Solution:
     def isMatch(self, s: str, p: str) -> bool:
 
-        def chunkP(p):
-            res = []
-            current = ''
-            for char in p:
-                if char == '*':
-                    if current != '':
-                        res.append(current)
-                        current = ''
-                else:
-                    current = current + char
-            if current != '':
-                res.append(current)
-            return res
-        
-        def chunkMatch(sChunk, pChunk):
-            if len(sChunk) != len(pChunk):
-                return False
-            for i in range(len(pChunk)):
-                if pChunk[i] == '?':
-                    continue
-                else:
-                    if pChunk[i] != sChunk[i]:
-                        return False
-            return True
+        sLen = len(s)
+        pLen = len(p)
+        # dp[i][j] => s[:i] matches p[:j]
+        dp = [[False for j in range(pLen+1)] for i in range(sLen+1)]
+        # empty string matches empty pattern
+        dp[0][0] = True
+        for i in range(sLen+1):
+            for j in range(1,pLen+1):
+                # skip j == 0, will always be False
+                if i == 0:
+                    if all([c == '*' for c in p[:j]]):
+                        # when s[:i] is empty (i==0) p[:j] will only match if p[:j] == '*'
+                        dp[i][j] = True
+                elif p[j-1] == '?' or p[j-1] == s[i-1]:
+                    dp[i][j] = dp[i-1][j-1]
+                elif p[j-1] == '*':
+                    dp[i][j] = dp[i-1][j] or dp[i][j-1]
 
-        def matchRec(s, chunks):
-
-            if len(chunks) == 0:
-                return True if len(s) == 0 else False
-            
-            if len(chunks) == 1:
-                return chunkMatch(s, chunks[0])
-
-            pChunk = chunks[0]
-            for i in range(len(s)-len(pChunk)):
-                sChunk = s[i:i+len(pChunk)]
-                if chunkMatch(sChunk, pChunk):
-                    if matchRec(s[i+len(pChunk)], chunks[1:]):
-                        return True
-            return False
-        
-        chunkedP = chunkP(p)
-        print(chunkedP)
-        return matchRec(s, chunkedP)
+        return dp[-1][-1]
 
 sol = Solution()
-s = 'aa'
-p = '*'
+s = 'abcdcd'
+p = '*cd'
 print(sol.isMatch(s, p))
